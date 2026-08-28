@@ -1,0 +1,70 @@
+<% if @poll.errors.any? %>
+  <div id="errorExplanation">
+    <ul>
+      <% @poll.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<form method="post" action="<%= @poll.new_record? ? project_polls_path(@project) : project_poll_path(@project, @poll) %>" class="tabular">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <% unless @poll.new_record? %>
+    <input type="hidden" name="_method" value="patch" />
+  <% end %>
+  <div class="box">
+    <p>
+      <label><%= l(:poll_field_title) %></label>
+      <input type="text" name="poll[title]" size="60" value="<%= @poll.title %>" required="required" />
+    </p>
+    <p>
+      <label><%= l(:poll_field_description) %></label>
+      <textarea name="poll[description]" rows="5" cols="80"><%= @poll.description %></textarea>
+    </p>
+    <p>
+      <label><%= l(:poll_open_status) %></label>
+      <input type="hidden" name="poll[is_open]" value="0" />
+      <input type="checkbox" name="poll[is_open]" value="1" <%= @poll.is_open? ? 'checked="checked"' : '' %> />
+    </p>
+    <p>
+      <label><%= l(:poll_multiple) %></label>
+      <input type="hidden" name="poll[multiple]" value="0" />
+      <input type="checkbox" name="poll[multiple]" value="1" <%= @poll.multiple? ? 'checked="checked"' : '' %> />
+    </p>
+    <p>
+      <label><%= l(:poll_allow_custom) %></label>
+      <input type="hidden" name="poll[allow_custom]" value="0" />
+      <input type="checkbox" name="poll[allow_custom]" value="1" <%= @poll.allow_custom? ? 'checked="checked"' : '' %> />
+    </p>
+    <p><label><%= l(:poll_options) %></label></p>
+    <div id="poll_options">
+      <% @poll.options.each_with_index do |opt, i| %>
+        <p class="poll-option-row">
+          <% unless opt.new_record? %>
+            <input type="hidden" name="poll[options_attributes][<%= i %>][id]" value="<%= opt.id %>" />
+          <% end %>
+          <input type="text" name="poll[options_attributes][<%= i %>][value]" value="<%= opt.value %>" size="60" />
+          <% unless opt.new_record? %>
+            <label>
+              <input type="checkbox" name="poll[options_attributes][<%= i %>][_destroy]" value="1" />
+              <%= l(:poll_remove) %>
+            </label>
+          <% end %>
+        </p>
+      <% end %>
+    </div>
+    <p><a href="#" id="poll_add_option" onclick="return addPollOption()">+ <%= l(:poll_add_option) %></a></p>
+  </div>
+  <p><input type="submit" value="<%= l(:button_save) %>" class="button" /></p>
+</form>
+
+<script type="text/javascript">
+function addPollOption() {
+  var n = document.querySelectorAll('#poll_options .poll-option-row').length;
+  var p = document.createElement('p');
+  p.className = 'poll-option-row';
+  p.innerHTML = '<input type="text" name="poll[options_attributes][' + n + '][value]" size="60" />';
+  document.getElementById('poll_options').appendChild(p);
+  return false;
+}
+</script>

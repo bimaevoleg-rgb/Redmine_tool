@@ -1,0 +1,65 @@
+<div class="contextual">
+  <% if User.current.allowed_to?(:manage_polls, @project) %>
+    <%= link_to l(:button_edit), edit_project_poll_path(@project, @poll), :class => 'icon icon-edit' %>
+    <%= link_to l(:button_delete), project_poll_path(@project, @poll), :method => :delete,
+                :data => { :confirm => l(:text_are_you_sure) }, :class => 'icon icon-del' %>
+    <%= link_to l(:poll_report), report_project_poll_path(@project, @poll), :class => 'icon icon-download' %>
+  <% end %>
+</div>
+<h2><%= @poll.title %></h2>
+<div class="description"><%= textilizable @poll.description %></div>
+<p><%= @poll.is_open? ? l(:poll_open_status) : l(:poll_closed_status) %></p>
+
+<% if @poll.is_open? && User.current.allowed_to?(:vote_polls, @project) %>
+  <div class="box tabular">
+    <form method="post" action="<%= vote_project_poll_path(@project, @poll) %>">
+      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+      <% if @poll.multiple? %>
+        <% @poll.options.each do |opt| %>
+          <label class="block">
+            <input type="checkbox" name="poll_option_ids[]" value="<%= opt.id %>" />
+            <%= opt.value %>
+          </label>
+        <% end %>
+      <% else %>
+        <% @poll.options.each do |opt| %>
+          <label class="block">
+            <input type="radio" name="poll_option_id" value="<%= opt.id %>" />
+            <%= opt.value %>
+          </label>
+        <% end %>
+      <% end %>
+      <% if @poll.allow_custom? %>
+        <label class="block">
+          <input type="text" name="custom_value" size="50" placeholder="<%= l(:poll_custom_option) %>" />
+        </label>
+      <% end %>
+      <input type="submit" value="<%= l(:poll_vote) %>" class="button" />
+    </form>
+    <% if @user_vote %>
+      <p class="flash notice"><%= l(:poll_you_voted) %></p>
+      <form method="post" action="<%= cancel_vote_project_poll_path(@project, @poll) %>" class="inline">
+        <input type="hidden" name="_method" value="delete" />
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <input type="submit" value="<%= l(:poll_cancel_vote) %>" class="button" />
+      </form>
+    <% end %>
+  </div>
+<% end %>
+
+<h3><%= l(:poll_results) %></h3>
+<% total = @poll.votes.count %>
+<% @poll.options.each do |opt| %>
+  <% count = opt.votes.count %>
+  <% pct = total.zero? ? 0 : (count * 100.0 / total).round %>
+  <p><strong style="white-space: pre-line;"><%= opt.value %></strong> — <%= count %> (<%= pct %>%)</p>
+  <% voters = opt.votes.includes(:user).map { |v| v.user.name } %>
+  <% if voters.any? %>
+    <ul>
+      <% voters.each do |name| %>
+        <li><%= name %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+<p><%= l(:poll_total_votes) %>: <%= total %></p>

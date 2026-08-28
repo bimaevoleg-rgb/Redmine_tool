@@ -1,0 +1,20 @@
+<div class="contextual">
+  <% if User.current.allowed_to?(:manage_polls, @project) %>
+    <%= link_to l(:poll_new), new_project_poll_path(@project), :class => 'icon icon-add' %>
+  <% end %>
+</div>
+<h2><%= l(:label_polls) %></h2>
+<% if @polls.any? %>
+  <% @polls.each do |poll| %>
+    <div class="box tabular">
+      <h3><%= link_to poll.title, project_poll_path(@project, poll) %></h3>
+      <div class="description"><%= textilizable poll.description %></div>
+      <p>
+        <%= l(:poll_votes_count, :count => poll.votes.count) %>
+        | <%= poll.is_open? ? l(:poll_open_status) : l(:poll_closed_status) %>
+      </p>
+    </div>
+  <% end %>
+<% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% end %>
