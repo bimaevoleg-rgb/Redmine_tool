@@ -1,0 +1,49 @@
+<fieldset>
+  <legend>Расписание и отправка</legend>
+  <p>
+    <label><%= l(:tr_recipients) %></label>
+    <textarea name="settings[recipients]" rows="3"><%= @settings['recipients'] %></textarea>
+    <em class="info"><%= l(:tr_recipients_hint) %></em>
+  </p>
+  <p>
+    <label><%= l(:tr_send_time) %></label>
+    <input type="time" name="settings[send_time]" value="<%= @settings['send_time'] %>" />
+    <em class="info"><%= l(:tr_send_time_hint) %></em>
+  </p>
+  <p>
+    <label><%= l(:tr_format) %></label>
+    <label class="inline"><%= check_box_tag 'settings[csv_attachment]', '1', @settings['csv_attachment'] == '1' %> <%= l(:tr_csv) %></label>
+  </p>
+</fieldset>
+
+<fieldset>
+  <legend><%= l(:tr_periods) %></legend>
+  <p>
+    <label><%= l(:tr_include_periods) %></label>
+    <label class="inline"><%= check_box_tag 'settings[period_yesterday]', '1', @settings['period_yesterday'] == '1' %> <%= l(:tr_yesterday) %></label><br/>
+    <label class="inline"><%= check_box_tag 'settings[period_week]', '1', @settings['period_week'] == '1' %> <%= l(:tr_week) %></label><br/>
+    <label class="inline"><%= check_box_tag 'settings[period_month]', '1', @settings['period_month'] == '1' %> <%= l(:tr_month_calendar) %></label>
+  </p>
+  <p>
+    <label><%= l(:tr_month_expand) %></label>
+    <label class="inline"><%= check_box_tag 'settings[month_expand]', '1', @settings['month_expand'] == '1' %> <%= l(:tr_month_expand_hint) %></label>
+  </p>
+  <p>
+    <label><%= l(:tr_include_empty_days) %></label>
+    <label class="inline"><%= check_box_tag 'settings[include_empty_days]', '1', @settings['include_empty_days'] == '1' %> <%= l(:tr_include_empty_days_hint) %></label>
+  </p>
+</fieldset>
+
+<fieldset>
+  <legend><%= l(:tr_filters) %></legend>
+  <p>
+    <label><%= l(:tr_user_filter) %></label>
+    <input type="text" name="settings[user_filter]" size="60" value="<%= @settings['user_filter'] %>" />
+    <em class="info"><%= l(:tr_user_filter_hint) %></em>
+  </p>
+  <p>
+    <label><%= l(:tr_project_filter) %></label>
+    <input type="text" name="settings[project_filter]" size="60" value="<%= @settings['project_filter'] %>" />
+    <em class="info"><%= l(:tr_project_filter_hint) %></em>
+  </p>
+</fieldset>

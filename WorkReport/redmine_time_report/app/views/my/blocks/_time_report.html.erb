@@ -1,0 +1,37 @@
+<% begin %>
+  <% report = TimeReport.build(Setting.plugin_redmine_time_report) %>
+  <h3 class="icon icon-time"><%= l(:label_spent_time) %></h3>
+  <table class="list">
+    <tr>
+      <th><%= l(:tr_yesterday) %></th>
+      <th><%= l(:tr_week) %></th>
+      <th><%= l(:tr_month_calendar) %></th>
+    </tr>
+    <tr>
+      <td style="text-align:center; font-weight:bold; font-size:16px;"><%= format('%.1f', report[:yesterday][:total]).tr('.', ',') %> ч</td>
+      <td style="text-align:center; font-weight:bold; font-size:16px;"><%= format('%.1f', report[:week][:total]).tr('.', ',') %> ч</td>
+      <td style="text-align:center; font-weight:bold; font-size:16px;"><%= format('%.1f', report[:month] ? report[:month][:total] : 0).tr('.', ',') %> ч</td>
+    </tr>
+  </table>
+  <p style="font-size:11px; color:#888; margin:4px 0 6px;">
+    <%= l(:tr_yesterday) %> — <%= report[:yesterday][:label] %>,
+    <%= l(:tr_week) %> — <%= report[:week][:label] %>,
+    <%= l(:tr_month_calendar) %> — <%= report[:month] ? report[:month][:label] : '—' %>
+  </p>
+  <% if report[:yesterday][:rows].any? %>
+    <table class="list">
+      <tr><th><%= l(:field_user) %></th><th><%= l(:label_project) %></th><th class="num"><%= l(:label_spent_time) %></th></tr>
+      <% report[:yesterday][:rows].first(5).each do |r| %>
+        <tr>
+          <td><%= r[0] %></td>
+          <td><%= r[2] %></td>
+          <td class="num"><%= format('%.2f', r[3]).tr('.', ',') %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+  <p><%= link_to l(:label_details), time_entries_path, :class => 'icon icon-time' %></p>
+<% rescue => e %>
+  <h3 class="icon icon-time"><%= l(:label_spent_time) %></h3>
+  <p class="nodata"><%= e.message %></p>
+<% end %>
